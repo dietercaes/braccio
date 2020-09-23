@@ -1,24 +1,16 @@
-
-/*
-  simpleMovements.ino
-
- This  sketch simpleMovements shows how they move each servo motor of Braccio
-
- Created on 18 Nov 2015
- by Andrea Martino
-
- This example is in the public domain.
- */
-
 #include <Braccio.h>
 #include <Servo.h>
 #include <math.h>
 
-// Constanten
-int XWAARDE = 0;
-int ZWAARDE = 195;
-int C = 125  //C
-int B = 110 //B
+// CONSTANTS
+// X and Z values are the given coordinates for the top joint of the first three movable armpieces.
+// This program doesn't use the full functionality of the braccio to simplify creating the code.
+// X and Z value of the first joint won't change.
+const unsigned int XVALUE = 0;
+const unsigned int ZVALUE = 195;
+// C and B are the lenghts of the second and thrird arm joints.
+const int C = 125;
+const int B = 110;
 
 Servo base;
 Servo shoulder;
@@ -27,12 +19,25 @@ Servo wrist_rot;
 Servo wrist_ver;
 Servo gripper;
 
-void moveToPosition(x, z){
-  int lengthBCvector = sqrt((XWAARDE - x) * (XWAARDE - x) + (ZWAARDE - z) * (ZWAARDE - z));
 
-  double angle = acos(((B*B) + (C*C) - (A*A))/2BC)
-  //                                  m1   m2     m3      m4    m5   m6
-  Braccio.ServoMovement(20,           90,  90, hoek2, hoek3, 90,  10);
+void moveToPosition(unsigned int x, unsigned int z){
+  double lengthBCvector = sqrt((XVALUE - x) * (XVALUE - x) + (ZVALUE - z) * (ZVALUE - z));
+
+  // angles
+  double angleA;
+  double angleB;
+  double angleC;
+
+  // lengths
+  int a = lengthBCvector;
+  int b = B;
+  int c = C;
+
+  angleA = acos(((b*b) + (c*c) - (a*a))/(2 * b * c));
+  angleB = acos((a*a + c*c - b*b)/(2 * a * c));
+  angleC = acos((a*a + b*b - c*c)/(2 * a * b));  
+  
+  Braccio.ServoMovement(20,   90, 90, round(angleA), round(angleB), 90, 10);
 }
 
 void setup() {
@@ -45,6 +50,7 @@ void setup() {
   //Wrist rotation (M5): 90 degrees
   //gripper (M6): 10 degrees
   Braccio.begin();
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -57,15 +63,5 @@ void loop() {
    M5=wrist rotation degrees. Allowed values from 0 to 180 degrees
    M6=gripper degrees. Allowed values from 10 to 73 degrees. 10: the toungue is open, 73: the gripper is closed.
   */
-  
-                       //(step delay, M1, M2, M3, M4, M5, M6);
-  Braccio.ServoMovement(30,           0,  45, 180, 180, 90,  10);  
-
-  //Wait 1 second
-  delay(1000);
-
-  Braccio.ServoMovement(20,           180,  45, 180, 180, 90,  10);  
-
-  //Wait 1 second
-  delay(1000);
+  moveToPosition(78, 400);
 }
