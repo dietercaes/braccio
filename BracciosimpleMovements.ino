@@ -12,6 +12,13 @@
 
 #include <Braccio.h>
 #include <Servo.h>
+#include <math.h>
+
+// Constanten
+int XWAARDE = 0;
+int ZWAARDE = 195;
+int C = 125  //C
+int B = 110 //B
 
 Servo base;
 Servo shoulder;
@@ -19,6 +26,14 @@ Servo elbow;
 Servo wrist_rot;
 Servo wrist_ver;
 Servo gripper;
+
+void moveToPosition(x, z){
+  int lengthBCvector = sqrt((XWAARDE - x) * (XWAARDE - x) + (ZWAARDE - z) * (ZWAARDE - z));
+
+  double angle = acos(((B*B) + (C*C) - (A*A))/2BC)
+  //                                  m1   m2     m3      m4    m5   m6
+  Braccio.ServoMovement(20,           90,  90, hoek2, hoek3, 90,  10);
+}
 
 void setup() {
   //Initialization functions and set up the initial position for Braccio
@@ -44,12 +59,12 @@ void loop() {
   */
   
                        //(step delay, M1, M2, M3, M4, M5, M6);
-  Braccio.ServoMovement(20,           0,  15, 180, 170, 0,  73);  
+  Braccio.ServoMovement(30,           0,  45, 180, 180, 90,  10);  
 
   //Wait 1 second
   delay(1000);
 
-  Braccio.ServoMovement(20,           180,  165, 0, 0, 180,  10);  
+  Braccio.ServoMovement(20,           180,  45, 180, 180, 90,  10);  
 
   //Wait 1 second
   delay(1000);
